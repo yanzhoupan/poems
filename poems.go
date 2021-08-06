@@ -13,6 +13,7 @@ import (
 
 const (
 	FILE_URL_PREFIX = "https://raw.githubusercontent.com/yanzhoupan/poems/main/tang/"
+	FILES_CNT_TANG  = 900
 )
 
 type Poem struct {
@@ -25,8 +26,7 @@ type Poem struct {
 
 // generate file name to download
 func genFileName() string {
-	randIdx := rand.Int31n(900) + 1
-	// randIdx = 335
+	randIdx := rand.Int31n(FILES_CNT_TANG-1) + 1
 	digits := 1
 	tmp := randIdx
 	for tmp/10 > 0 {
@@ -51,7 +51,7 @@ func printRandomPoem(fileName string) {
 	json.Unmarshal([]byte(byteValue), &poems)
 
 	poemsLen := len(poems)
-	randIdx := rand.Int31n(int32(poemsLen)) + 1
+	randIdx := rand.Int31n(int32(poemsLen-1)) + 1
 	randPoem := poems[randIdx]
 	fmt.Println("题目：", randPoem.Title)
 	fmt.Println("作者：", randPoem.Author)

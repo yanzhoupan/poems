@@ -29,8 +29,9 @@ fi
 
 tar -xvf "${file_name}"
 
-if [[ "${goos}" == "win64" ]]; then
-  echo "poems download success."
+if [[ "$OSTYPE" == "msys" ]]; then
+  echo "poems download success, run 'poems.exe' in current directory now!"
+  del $file_name
   exit 0
 fi
 sudo cp $binary_name /usr/local/bin/
@@ -38,4 +39,4 @@ sudo cp $binary_name /usr/local/bin/
 rm -rf $binary_name
 rm -rf $file_name
 
-echo "poems install success."
+echo "poems install success, run 'poems' now!"
