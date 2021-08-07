@@ -17,8 +17,8 @@ const (
 )
 
 type Poem struct {
-	Volume   string
-	Sequence string
+	Volume   int
+	Sequence int
 	Title    string
 	Author   string
 	Content  []string
@@ -44,11 +44,20 @@ func printRandomPoem(fileName string) {
 	if err != nil {
 		fmt.Printf("open file failed: %v\n", err)
 	}
-	defer poemFile.Close()
+	defer func(poemFile *os.File) {
+		err := poemFile.Close()
+		if err != nil {
+			fmt.Printf("File close error: %v\n", err)
+		}
+	}(poemFile)
 
 	byteValue, _ := ioutil.ReadAll(poemFile)
 	var poems []Poem
-	json.Unmarshal([]byte(byteValue), &poems)
+	err = json.Unmarshal([]byte(byteValue), &poems)
+	if err != nil {
+		fmt.Printf("Read file error: %v\n", err)
+		return
+	}
 
 	poemsLen := len(poems)
 	randIdx := rand.Int31n(int32(poemsLen))
@@ -66,12 +75,16 @@ func main() {
 	fileName := genFileName()
 	downloadURL := FILE_URL_PREFIX + fileName
 	curl := exec.Command("curl", "-LO", downloadURL)
-	curl.Run() // wait until curl finish
+	err := curl.Run()
+	if err != nil {
+		fmt.Printf("curl error: %v\n", err)
+		return
+	} // wait until curl finish
 
 	printRandomPoem(fileName)
 
 	// remove the downloaded json file
-	err := os.Remove(fileName)
+	err = os.Remove(fileName)
 	if err != nil {
 		fmt.Printf("remove file filed: %v\n", err)
 	}
